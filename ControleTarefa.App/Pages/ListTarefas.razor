@@ -1,0 +1,51 @@
+﻿@page "/list"
+
+@using ControleTarefa.App.Data
+@using ControleTarefa.Data.Entidades
+@inject CustomHttpClient Http
+@inject AppSettingsService AppSettingsService
+
+<h1>Tarefas</h1>
+
+<p>
+    <a href="/new">Criar nova tarefa</a>
+</p>
+
+@if (tarefas == null)
+{
+    <iframe src="https://giphy.com/embed/KG4PMQ0jyimywxNt8i" width="480" height="480" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/AmpersandAdvisory-loading-ampersandadvisory-KG4PMQ0jyimywxNt8i">via GIPHY</a></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Descrição</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tarefa in tarefas)
+            {
+                <tr>
+                    <td>@tarefa.Nome</td>
+                    <td>@tarefa.Descricao</td>
+                    <td>
+                        <a href="/edit/@tarefa.ID.ToString()">Editar</a>
+                        <a href="/delete/@tarefa.ID.ToString()">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Tarefa[] tarefas;
+    string baseUrl;
+    protected override async Task OnInitializedAsync()
+    {
+        baseUrl = AppSettingsService.GetBaseUrl();
+        tarefas = await Http.GetJsonAsync<Tarefa[]>(baseUrl + "/api/tarefas/get");
+    }
+}

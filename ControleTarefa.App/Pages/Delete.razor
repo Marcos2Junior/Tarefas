@@ -1,0 +1,50 @@
+﻿@using ControleTarefa.App.Data
+@using ControleTarefa.Data.Entidades
+@page "/delete/{id}"
+@inject CustomHttpClient Http
+@inject NavigationManager NavigationManager
+@inject AppSettingsService AppSettingsService
+
+<h1>Delete</h1>
+<p>Voce tem certeza que deseja deletar a tarefa <b>@tarefa.Nome</b></p>
+<hr />
+<div class="col-md-4">
+    <table class="table">
+        <tr>
+            <td>Nome</td>
+            <td>@tarefa.Nome</td>
+        </tr>
+        <tr>
+            <td>Descricao</td>
+            <td>@tarefa.Descricao</td>
+        </tr>
+    </table>
+    <div class="form-group">
+        <input type="button" value="Deletar" @onclick="@ConfirmDelete" class="btn btn-primary" />
+        <input type="button" value="Cancelar" @onclick="@Cancel" class="btn" />
+    </div>
+</div>
+@code {
+    [Parameter]
+    public string id { get; set; }
+    string baseUrl;
+    Tarefa tarefa = new Tarefa();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        baseUrl = AppSettingsService.GetBaseUrl();
+        tarefa = await Http.GetJsonAsync<Tarefa>(baseUrl + "/api/tarefas/details/" + id);
+    }
+
+    protected async Task ConfirmDelete()
+    {
+        await Http.DeleteAsync(baseUrl + "/api/tarefas/delete/" + id);
+        NavigationManager.NavigateTo("list");
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("list");
+    }
+}

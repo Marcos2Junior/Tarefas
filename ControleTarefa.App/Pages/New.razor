@@ -1,0 +1,48 @@
+﻿@page "/new"
+@using ControleTarefa.App.Data
+@using ControleTarefa.Data.Entidades
+@inject CustomHttpClient Http
+@inject AppSettingsService AppSettingsService
+@inject NavigationManager NavigationManager
+
+<h1>Nova tarefa</h1>
+<hr />
+
+<form>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-group">
+                <label for="Nome" class="control-label">Nome</label>
+                <input for="Nome" class="form-control" @bind="@tarefa.Nome"/>
+            </div>
+            <div class="form-group">
+                <label for="Descricao" class="control-label">Descricao</label>
+                <input for="Descricao" class="form-control" @bind="@tarefa.Descricao"/>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <input type="button" class="btn btn-primary" value="Salvar" @onclick="@Create"/>
+                <input type="button" class="btn" @onclick="@Cancel" value="Cancelar"/>
+            </div>
+        </div>
+    </div>
+</form>
+@code {
+    Tarefa tarefa = new Tarefa();
+    string baseUrl;
+    protected async Task Create()
+    {
+        baseUrl = AppSettingsService.GetBaseUrl();
+        await Http.PostJsonAsync(baseUrl + "/api/tarefas/create", tarefa);
+        NavigationManager.NavigateTo("list");
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("list");
+    }
+
+}
